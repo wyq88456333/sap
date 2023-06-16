@@ -84,3 +84,29 @@ register_pascal_voc(meta_name, dataset_dir, split, years, classes)
 # years = 2007
 # meta_name = 'foggy-cityscapes_{}'.format(split)
 # register_pascal_voc(meta_name, dataset_dir, split, years, classes)
+
+json_file_path = '/home/xunxun/workspace/sada/sa-da-faster-master/maskrcnn_benchmark/datasets/spine/3yuan/train_one.json'
+image_root =  '/home/xunxun/workspace/sada/sa-da-faster-master/maskrcnn_benchmark/datasets/spine/3yuan/trainimages'
+split = 'train'
+meta_name = 'spines_3yuan_{}'.format(split)
+register_coco_instances(meta_name, {}, json_file_path, image_root)
+
+json_file_path = '/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/datasets/mianyang/coco_miangyang_1600_train.json'
+image_root =  '/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/datasets/mianyang/1600valimages'
+split = 'train'
+meta_name = 'spines_mianyang_{}'.format(split)
+register_coco_instances(meta_name, {}, json_file_path, image_root)
+
+json_file_path = '/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/datasets/mianyang/coco_miangyang_1600_val.json'
+image_root =  '/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/datasets/mianyang/1600valimages'
+# json_file_path = '/home/xunxun/workspace/sada/sa-da-faster-master/maskrcnn_benchmark/datasets/spine/mianyang/coco_sp_val.json'
+# image_root = '/home/xunxun/workspace/sada/sa-da-faster-master/maskrcnn_benchmark/datasets/spine/mianyang/valimages'
+split = 'val'
+meta_name = 'spines_mianyang_{}'.format(split)
+register_coco_instances(meta_name, {}, json_file_path, image_root)
+
+json_file_path = '/home/xunxun/workspace/yh_det_pro/mm_dt/related_files/linyi/linyi_60_hash.json'
+image_root =  '/home/xunxun/workspace/yh_det_pro/mm_dt/data/linyi/anned_ori/total_hash'
+split = 'val'
+meta_name = 'spines_linyi_{}'.format(split)
+register_coco_instances(meta_name, {}, json_file_path, image_root)

@@ -1,25 +1,36 @@
 _BASE_: "./Base-RCNN-C4.yaml"
 DATASETS:
   SOURCE_DOMAIN:
-    TRAIN: ("cityscapes_train",)
+    # TRAIN: ("spines_3yuan_train",)
+    TRAIN: ("spines_3yuan_train","spines_mianyang_train",)
   TARGET_DOMAIN:
-    TRAIN: ("foggy-cityscapes_train",)
-  TRAIN: ("cityscapes_train",)
-  TEST: ("foggy-cityscapes_val",)
+    TRAIN: ("spines_3yuan_train","spines_mianyang_train",)
+  # TRAIN: ("spines_3yuan_train",)
+  TRAIN: ("spines_3yuan_train","spines_mianyang_train",)
+  TEST: ("spines_mianyang_val",)
 MODEL:
+  # WEIGHTS: "/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/outputs/output-23-04-20_01-52/model_0089999.pth"
+  # WEIGHTS: "/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/output/sap_trans3/model_0029999.pth"
+  # WEIGHTS: "/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/output/base_mrcnn/model_final.pth"
+  # WEIGHTS: "/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/output/base_mrcnn/model_0089999.pth"
+  DEVICE: "cuda:0"
   META_ARCHITECTURE: "SAPRCNN"
   BACKBONE:
-    FREEZE_AT: 1
+    FREEZE_AT: -1
   WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
   KEYPOINT_ON: False
-  MASK_ON: False
+  MASK_ON: True
   DOMAIN_ADAPTATION_ON: False
+  ROI_MASK_HEAD:
+    NAME: "MaskRCNNConvUpsampleHead"
+    NUM_CONV: 4
+    POOLER_RESOLUTION: 14
   ROI_HEADS:
-    NUM_CLASSES: 8
+    NUM_CLASSES: 1
   DA_HEAD:
     IN_FEATURE: "res4"
     IN_CHANNELS: 1024
-    NUM_ANCHOR_IN_IMG: 5
+    NUM_ANCHOR_IN_IMG: 15
     EMBEDDING_KERNEL_SIZE: 3
     EMBEDDING_NORM: True
     EMBEDDING_DROPOUT: True
@@ -30,17 +41,22 @@ MODEL:
     WINDOW_SIZES: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 35, 37]
   PROPOSAL_GENERATOR:
     NAME: "SAPRPN"
+    
 INPUT:
-  MIN_SIZE_TRAIN: (800, 832, 864, 864, 896, 928, 960, 992, 1024)
-  MIN_SIZE_TRAIN_SAMPLING: "choice"
+  MIN_SIZE_TRAIN: (800, 832, 864, 864, 896, 928, 960, 992, 1024) # Size of the smallest side of the image during training
+  MIN_SIZE_TRAIN_SAMPLING: "choice"  # Sample size of smallest side by choice or random selection from range give by MIN_SIZE_TRAIN
   MIN_SIZE_TEST: 1024
   MAX_SIZE_TRAIN: 2048
   MAX_SIZE_TEST: 2048
 SOLVER:
-  IMS_PER_BATCH: 2 # batch size
-  STEPS: (80000,)
-  BASE_LR: 0.001
-  MAX_ITER: 90000
-  CHECKPOINT_PERIOD: 5000
+  IMS_PER_BATCH: 2 # batch size  2
+  BASE_LR: 0.00001   # 0.001
+  STEPS: (50000,70000)   # 80000
+  # WEIGHT_DECAY: 0.0001   # x
+  MAX_ITER: 100000  # 90000
+  CHECKPOINT_PERIOD: 5000 # 5000
 TEST:
-  EVAL_PERIOD: 5000
+  EVAL_PERIOD: 400
+DATALOADER:
+  NUM_WORKERS: 0
+OUTPUT_DIR: "./output/base_3___mian"

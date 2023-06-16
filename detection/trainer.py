@@ -5,11 +5,13 @@ from detectron2.utils import comm
 from detectron2.utils.logger import setup_logger
 from detectron2.engine import DefaultTrainer, create_ddp_model, SimpleTrainer, hooks
 from detectron2.checkpoint import DetectionCheckpointer
+from detectron2.evaluation import COCOEvaluator
 
 from fvcore.nn.precise_bn import get_bn_modules
 from .evaluation.pascal_voc import PascalVOCDetectionEvaluator_
 from .data.build import build_DA_detection_train_loader
 import torch
+import tensorboard
 
 class _DATrainer(SimpleTrainer):
     # one2one domain adpatation trainer
@@ -110,7 +112,8 @@ class DATrainer(DefaultTrainer):
 
     @classmethod
     def build_evaluator(cls, cfg, dataset_name):
-        return PascalVOCDetectionEvaluator_(dataset_name)
+        # return PascalVOCDetectionEvaluator_(dataset_name)
+        return COCOEvaluator(dataset_name, cfg, True, output_dir=None)
 
     def build_hooks(self):
         """
@@ -169,4 +172,5 @@ class DATrainer(DefaultTrainer):
 class DefaultTrainer_(DefaultTrainer):
     @classmethod
     def build_evaluator(cls, cfg, dataset_name):
-        return PascalVOCDetectionEvaluator_(dataset_name)
+        # return PascalVOCDetectionEvaluator_(dataset_name)
+        return COCOEvaluator(dataset_name, cfg, True, output_dir=None)

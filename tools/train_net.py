@@ -11,6 +11,9 @@ sys.path.append(os.getcwd())
 
 from detection.trainer import DATrainer, DefaultTrainer_
 
+import tensorboard
+
+
 # register datasets
 import detection.data.register
 
@@ -62,7 +65,7 @@ def setup(args):
 
 def test_images(cfg):
     from detectron2.utils.visualizer import Visualizer, ColorMode
-    from detectron2.data import MetadataCatalog
+    from detectron2.data import MetadataCatalog, get_detection_dataset_dicts
     from detectron2.data.datasets import load_voc_instances
     import cv2
     from pathlib import Path
@@ -78,7 +81,17 @@ def test_images(cfg):
         dirname = MetadataCatalog.get(dataset_name).get('dirname')
         split = MetadataCatalog.get(dataset_name).get('split')
         thing_classes = MetadataCatalog.get(dataset_name).get('thing_classes')
-        for d in iter(load_voc_instances(dirname, split, thing_classes)):
+
+        dataset_dict = get_detection_dataset_dicts(
+                cfg.DATASETS.TRAIN,
+                filter_empty=cfg.DATALOADER.FILTER_EMPTY_ANNOTATIONS,
+                min_keypoints=cfg.MODEL.ROI_KEYPOINT_HEAD.MIN_KEYPOINTS_PER_IMAGE
+                if cfg.MODEL.KEYPOINT_ON
+                else 0,
+                proposal_files=cfg.DATASETS.PROPOSAL_FILES_TRAIN if cfg.MODEL.LOAD_PROPOSALS else None,
+            )
+        # for d in iter(load_voc_instances(dirname, split, thing_classes)):
+        for d in iter(dataset_dict):
             im = cv2.imread(d.get('file_name'))
             v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(dataset_name), scale=1.2, instance_mode=ColorMode.IMAGE_BW)
             outputs = predictor(im)
@@ -109,12 +122,18 @@ def main(args):
 
 
 if __name__ == "__main__":
+
     parser = default_argument_parser()
     parser.add_argument("--test-images", action="store_true", help="output predicted bbox to test images")
     parser.add_argument("--setting-token", help="add some simple profile about this experiment to output directory name")
     args = parser.parse_args()
+    args.config_file = '/home/xunxun/workspace/dcdet/SAPN/sap-da-detectron2/configs/baseline_R_50_C4_1x-city2foggy.yaml'
+    # args.num_gpus = 2
+    # args.resume = True
+    # args.test_images = True
+    # args.eval_only = True
     print("Command Line Args:", args)
-
+    
     launch(
         main,
         args.num_gpus,
